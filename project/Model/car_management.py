@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from project.model.query_management import run_query
+from project.model import messages
 
 def get_all_cars():
     query = "MATCH (car:Car) RETURN car"
@@ -18,14 +19,15 @@ def add_car():
             "Status": "Error",
             "Message": "Missing required fields. Please provide 'make', 'model', 'year', 'location' and 'status'."
         }), 400
+        # return messages.int_error('m')
     try:
         year = int(year)
     except ValueError:
-        return jsonify({
+        """return jsonify({
             "Status": "Error",
             "Message": "The 'year' field must be an integer."
-        }), 400
-    
+        }), 400"""
+        return messages.int_error(year)
     query = """
     CREATE (car:Car {make: $make, model:$model, year:$year, location:$location, status:$status})
     SET car.car_id = id(car) 
