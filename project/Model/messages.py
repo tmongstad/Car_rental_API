@@ -15,11 +15,11 @@ def missing_field_error(missing_fields: str):
         }), 400
     return message
 
-def success(node: str, key: str, value: Any, results):
+def success(node: str, key: str, value: Any, results, type_of_operation):
     message = jsonify({
             "Status": "Success",
-            "Message": f"{node} with {key} {value} updated successfully.",
-            "Updated Data": results
+            "Message": f"{node} with {key} {value} {type_of_operation}d successfully.",
+            f"{type_of_operation}d Data": results
         }), 200
     return message
 

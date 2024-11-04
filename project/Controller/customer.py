@@ -1,5 +1,5 @@
 from project.model.customer_management import get_all_customers, add_customer, get_customer, update_customer, delete_customer
-from flask import jsonify, request
+from flask import request
 from project import app
 
 

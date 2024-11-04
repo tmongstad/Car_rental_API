@@ -1,9 +1,8 @@
 from project.model.query_management import run_query
 from project.model import messages
-from flask import request, jsonify
+from flask import request
 
 def add_customer():
-    pass
     user_data = request.get_json()
     name = user_data['name'] # Gets the make from the posted JSON.
     age = user_data['age']
@@ -36,8 +35,11 @@ def get_customer(customer_id):
     except ValueError:
         return messages.int_error('customer_id')
     query = "MATCH (customer:Customer {customer_id:$customer_id}) RETURN customer"
-    returned_data = run_query(query, {'customer_id':customer_id})
-    return returned_data
+    results = run_query(query, {'customer_id':customer_id})
+    if results:
+        return messages.success('Customer', 'ID', customer_id, results[0], 'recieve')
+    else:
+        return messages.no_results('Customer', 'customer_id', customer_id)
 
 def update_customer(customer_id):
     try:
@@ -65,15 +67,15 @@ def update_customer(customer_id):
     """
     results = run_query(query, {'customer_id':customer_id, **fields})
     if results:
-        return messages.success('Customer', 'ID', customer_id, results[0])
+        return messages.success('Customer', 'ID', customer_id, results[0], 'update')
     else:
         return messages.no_results('Customer', 'customer_id', customer_id)
-
 
 def delete_customer(customer_id):
     try:
         customer_id = int(customer_id)
     except ValueError:
         return messages.int_error('customer_id')
-    pass
-
+    query = "MATCH (customer:Customer {customer_id:$customer_id}) DETACH DELETE customer RETURN COUNT(customer) AS deleted_count"
+    result = run_query(query, {'customer_id':customer_id})
+    return result
