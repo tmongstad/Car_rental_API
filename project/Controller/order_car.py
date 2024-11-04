@@ -7,3 +7,4 @@ from project.model import messages
 def order_car():
     order = generate_order()
     return order
+

@@ -1,6 +1,7 @@
 from project.model.car_management import add_car, get_car, update_car, delete_car, run_query, get_all_cars
 from flask import jsonify, request
 from project import app
+from project.model import messages
 
 
 @app.route('/search', methods = ['POST'])
@@ -34,9 +35,31 @@ def manage_cars():
 # Route for getting, updating and deleting specific car-data
 @app.route('/cars/<car_id>', methods = ['GET', 'PUT', 'DELETE'])
 def handle_cars(car_id):
+    try:
+        car_id = int(car_id)
+    except ValueError:
+        return messages.int_error('car_id')
     if request.method == 'GET':
         return get_car(car_id)
     if request.method == 'PUT':
-        return update_car(car_id)
+        data = request.get_json()
+        fields = {}
+        if 'make' in data:
+            fields['make'] = data['make']
+        if 'model' in data:
+            fields['model'] = data['model']
+        if 'location' in data:
+            fields['location'] = data['location']
+        if 'year' in data:
+            try:
+                data['year'] = int(data['year'])
+            except ValueError:
+                return messages.int_error('year')
+            fields['year'] = data['year']
+        if 'status' in data:
+            fields['status'] = data['status']
+        data = update_car(car_id, fields)
+        if data:
+            return messages.success('Car', 'ID', car_id, data, 'update')
     if request.method == 'DELETE':
         return delete_car(car_id)

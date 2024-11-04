@@ -19,7 +19,7 @@ def success(node: str, key: str, value: Any, results, type_of_operation):
     message = jsonify({
             "Status": "Success",
             "Message": f"{node} with {key} {value} {type_of_operation}d successfully.",
-            f"{type_of_operation}d Data": results
+            f"data": results
         }), 200
     return message
 

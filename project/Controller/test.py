@@ -1,13 +1,9 @@
-"""from flask import jsonify
-from project import driver, app
+from project import app
+from project.model.order_management import check_customer
+from flask import request
 
-
-@app.route('/test')
-def test_connection():
-    try:
-        with driver.session() as session:
-            # Try a simple query to confirm connection
-            result = session.run("RETURN 1 AS result")
-            return jsonify({"status": "success", "result": result.single()["result"]})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})"""
+@app.route('/test/check_customer/<customer_id>', methods = ['GET'])
+def test_check_customer(customer_id):
+    if request.method == 'GET':
+        data = check_customer(customer_id)
+        return data
