@@ -1,4 +1,4 @@
-from project.model.order_management import generate_order, cancel_order, get_order_by_customer, get_all_orders
+from project.model.order_management import generate_order, cancel_order, get_order_by_customer, get_all_orders, change_booking_status, returned_car
 from flask import request, jsonify
 from project import app
 from project.model import messages
@@ -14,22 +14,22 @@ def all_orders():
 def order_car():
     # Gets the needed data
     user_data = request.get_json()
-    car_id = user_data['car_id']
-    customer_id = user_data['customer_id']
-    if not car_id or not customer_id:
+    car_id = user_data.get('car_id')
+    customer_id = user_data.get('customer_id')
+    if car_id is None or customer_id is None:
         return messages.missing_field_error('car id or customer id')
     # Checks the input
     try: 
         car_id = int(car_id)
         customer_id = int(customer_id)
     except ValueError:
-        messages.int_error('customer_id and car_id')
-    customer_data = get_customer(customer_id)
-    car_data = get_car(car_id)
-    if customer_data is None:
-        return messages.no_results('Customer', 'customer_id', customer_id, customer_data, 'found')
-    if get_car(car_id) is None:
-        return messages.no_results('Car', 'car_id', car_id, car_data, 'found')
+        return messages.int_error('customer_id and car_id')
+    customer_data = get_customer(customer_id)  # Gets customer data
+    car_data = get_car(car_id) # Gets car_data
+    if customer_data is None: # Returns error-message if customer is not found
+        return messages.no_results('Customer', 'customer_id', customer_id)
+    if car_data is None: # Returns error-message if car is not found
+        return messages.no_results('Car', 'car_id', car_id)
     # Checks if a customer already has placed an order.
     customer_booked = get_order_by_customer(customer_id)
     if customer_booked:
@@ -38,50 +38,81 @@ def order_car():
             'Status': 'Unable',
             'Data': customer_booked
         })
-    # Checks if the car is unavailable.
-    if car_data['status'] == 'unavailable':
+    # Checks if the car is available.
+    if car_data['status'] != 'available':
         return jsonify({
-            'Message': 'Car is unavailable',
-            'Status': 'unavailable',
+            'Message': f'Car is Not available',
+            'Status':'not available',
             'Data': car_data
-        })
-    if car_data['status'] == 'booked':
-        return jsonify({
-            'Message': 'Car is booked',
-            'Status': 'Booked',
-            'Data': car_data
-        })
+        })            
     # Checks if the car is available
-    if car_data['status'] == 'available':
+    else:
         update_car(car_id, {'status': 'booked'})
         order_data = generate_order(customer_id, car_id)
-        return messages.success('Order', 'Order ID', order_data[0]['order']['order_id'], order_data, 'generated')
-    else:
-        return jsonify('Something went wrong') # If something else should happen.
+        return order_data#messages.success('Order', 'Order ID', order_data[0]['order']['order_id'], order_data, 'generated')
+    
 
 @app.route('/rent_car', methods = ['PUT'])
 def rent_car():
     data = request.get_json()
-    car_id, customer_id = data['car_id'], data['customer_id']
-    if not car_id or not customer_id:
+    car_id, customer_id = data.get('car_id'), data.get('customer_id')
+    if car_id is None or customer_id is None:
         return messages.missing_field_error('car id or customer id')
     try:
         car_id = int(car_id)
         customer_id = int(customer_id)
     except ValueError:
         return messages.int_error('car_id and customer_id')
-    
+    car_data = change_booking_status(car_id, 'rented')
+    return messages.check_results('Car', 'car ID', car_id, car_data, 'updated')
 
-@app.route('/return_car', methods = ['PUT'])
+@app.route('/return_car', methods = ['PUT']) # Gets car_id, customer_id, and sets status to 'waiting for damage report'
 def return_car():
+    data = request.get_json()
+    car_id, customer_id, car_status = data.get('car_id'), data.get('customer_id'), data.get('car_status')
+    if car_id is None or customer_id is None or car_status is None:
+        return messages.missing_field_error('car_id, customer_id or car_status')
+    try:
+        car_id = int(car_id)
+        customer_id = int(customer_id)
+    except ValueError:
+        return messages.int_error('car_id and customer_id')
+    if car_status.lower() in ['ok', 'damaged']:
+        if car_status.lower() == 'damaged':
+            cancel_order(car_id, customer_id)
+            car_data = update_car(car_id, {'status': 'damaged'})
+            return jsonify({
+                'message': 'Car needs to be fixed',
+                'status': 'damaged',
+                'Data': car_data
+            })
+        if car_status.lower() == 'ok':
+            car_data = returned_car(car_id, customer_id)
+            return messages.check_results('Customer', 'Customer_id', customer_id, car_data, f'returned car with id{car_id}')
+    else:
+        return jsonify({
+            'message': 'status must be either OK or damaged',
+            'Status': 'error'
+        })
 
-    pass
+@app.route('/fix_car', methods=['PUT'])
+def fix_car():
+    data = request.get_json()
+    car_id = data.get('car_id')
+    if car_id is None:
+        return messages.missing_field_error('car_id')
+    try:
+        car_id = int(car_id)
+    except ValueError:
+        return messages.int_error('car_id')
+    car_data = update_car(car_id, {'status': 'available'})
+    return messages.check_results('Car', 'car_id', car_id, car_data, 'fixed')
 
 @app.route('/cancel_order_car', methods = ['DELETE'])
 def cancel_order_car():
     data = request.get_json()
-    car_id, customer_id = data['car_id'], data['customer_id']
-    if not car_id or not customer_id:
+    car_id, customer_id = data.get('car_id'), data.get('customer_id')
+    if car_id is None or customer_id is None:
         return messages.missing_field_error('car id or customer id')
     try:
         car_id = int(car_id)

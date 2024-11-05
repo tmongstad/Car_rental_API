@@ -18,7 +18,7 @@ def add_customer(name, age, address):
     if customer_data:
         return customer_data[0]['customer']  # as a dict{'customer_id': customer_id, 'name':name, 'age':age, 'address':address}
     else:
-        return []
+        return None
 
 def get_customer(customer_id):
     query = "MATCH (customer:Customer {customer_id:$customer_id}) RETURN customer"
@@ -26,7 +26,7 @@ def get_customer(customer_id):
     if customer_data:
         return customer_data[0]['customer'] # {'customer_id': customer_id, 'name':name, 'age':age, 'address':address}
     else:
-        return []
+        return None
 
 def update_customer(fields, customer_id):
     query_variable = ','.join([f'customer.{key}=${key}' for key in fields.keys()])
@@ -39,7 +39,7 @@ def update_customer(fields, customer_id):
     if customer_data:
         return customer_data[0]['customer'] # {'customer_id': customer_id, 'name':name, 'age':age, 'address':address}
     else:
-        return []
+        return None
 
 def delete_customer(customer_id):
     customer_data = get_customer(customer_id)
@@ -51,4 +51,4 @@ def delete_customer(customer_id):
         else:
             return [] # If query fails
     else:
-        return [] # If 
+        return None # If 

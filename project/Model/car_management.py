@@ -17,7 +17,7 @@ def add_car(make, model, year, location, status):
     if car_data:
         return car_data[0]['car']
     else:
-        return []
+        return None
 
 def get_car(car_id):
     query = "MATCH (car:Car{car_id:$car_id}) RETURN car"
@@ -25,7 +25,7 @@ def get_car(car_id):
     if car_data:
         return car_data[0]['car']
     else:
-        return []
+        return None
 
 def update_car(car_id, fields):
     query_variable = ','.join([f'car.{key}=${key}' for key in fields.keys()])
@@ -38,7 +38,7 @@ def update_car(car_id, fields):
     if car_data:
         return car_data[0]['car']
     else:
-        return []
+        return None
 
 def delete_car(car_id):
     car_data = get_car(car_id)
@@ -53,4 +53,4 @@ def delete_car(car_id):
         else:
             return {'Car_status': 'The car is unavailable'} # If the car is not available
     else:
-        return [] # If no car is found
+        return None # If no car is found

@@ -26,6 +26,7 @@ def get_employee(employee_id):
         return employee_data[0]['employee'] # Returns a dict: {'name':name, 'branch':branch, 'address':address}
     else:
         return []
+    
 def update_employee(fields, employee_id):
     query_variable = ','.join([f'employee.{key}=${key}' for key in fields.keys()])
     query = f"""
@@ -38,6 +39,7 @@ def update_employee(fields, employee_id):
         return employee_data[0]['employee'] # Returns a dict: {'name':name, 'branch':branch, 'address':address}
     else:
         return []
+    
 def delete_employee(employee_id):
     employee_data = get_employee(employee_id)
     if employee_data:
