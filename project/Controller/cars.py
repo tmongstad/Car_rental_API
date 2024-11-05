@@ -39,8 +39,14 @@ def handle_cars(car_id):
         car_id = int(car_id)
     except ValueError:
         return messages.int_error('car_id')
+    
     if request.method == 'GET':
-        return get_car(car_id)
+        results = get_car(car_id)
+        if results:
+            return messages.success('car', 'car_id', car_id, results, 'found')
+        else:
+            return messages.no_results('cars', 'car_id', car_id)
+
     if request.method == 'PUT':
         data = request.get_json()
         fields = {}

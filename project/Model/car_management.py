@@ -42,15 +42,9 @@ def add_car():
         }), 201
 
 def get_car(car_id):
-    try:
-        car_id = int(car_id)
-    except ValueError:
-        return jsonify({
-            "Status": "Error",
-            "Message": "The 'car_id' field must be an integer."
-        }), 400
     query = "MATCH (car:Car{car_id:$car_id}) RETURN car"
     results = run_query(query, params={'car_id':car_id})
+    return results[0]['car']
     if results:
         return jsonify({ # Return this dict in a json-format.
             'Status': 'Success!',
@@ -70,7 +64,7 @@ def update_car(car_id, fields):
     RETURN car
     """
     updated_data = run_query(query, {'car_id':car_id, **fields})
-    return updated_data[0]
+    return updated_data
     
 def delete_car(car_id):
     try:

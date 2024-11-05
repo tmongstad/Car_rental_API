@@ -18,7 +18,7 @@ def missing_field_error(missing_fields: str):
 def success(node: str, key: str, value: Any, results, type_of_operation):
     message = jsonify({
             "Status": "Success",
-            "Message": f"{node} with {key} {value} {type_of_operation}d successfully.",
+            "Message": f"{node} with {key} {value} {type_of_operation} successfully.",
             f"data": results
         }), 200
     return message
