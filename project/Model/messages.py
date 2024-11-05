@@ -29,3 +29,9 @@ def no_results(node: str, key: str, value: Any):
         "Message": f"No {node} found with {key}: {value}"
         }), 404
     return message
+
+def check_results(node, key, value, data, operation):
+    if data:
+        return success(node, key, value, data, operation)
+    else:
+        return no_results(node, key, value)

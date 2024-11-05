@@ -3,50 +3,46 @@ from flask import jsonify, request
 from project import app
 from project.model import messages
 
-
-@app.route('/search', methods = ['POST'])
-def search():
-    data = request.get_json() # Gets input in json-format.
-    make = data.get('make') # Gets whats in the make-key
-    query = """  
-    MATCH (car:Car {make: $make}) RETURN car.make AS make, car.model AS model, car.year AS year, car.location AS location
-    """  # $ - allows to put variables into the query.
-    results = run_query(query, {'make': make})
-
-    if results:
-        return jsonify({ # Return this dict in a json-format.
-            'Status': 'Success!',
-            'data': results
-        }), 200  # Status code that tells us that the requested resource was found
-    else:
-        return jsonify({ # Return this dict in a json-format.
-            "Status": "Error",
-            "Message": f"No cars found with make: {make}"
-        }), 404  # Status code that tells us that it was not found
-
 # Route for getting all cardata and adding car data
 @app.route('/cars', methods = ['GET', 'POST'])
 def manage_cars():
+    # Gets all cars
     if request.method == 'GET':
-        return get_all_cars()
+        data = get_all_cars()
+        return messages.check_results('All cars', 'none', 'none', data, 'found')
+    
+    # Adds a car
     if request.method == 'POST':
-        return add_car()
+        data = request.get_json()
+        make = data.get('make') # Gets the make from the posted JSON.
+        model = data.get('model')
+        year = data.get('year')
+        location = data.get('location')
+        status = data.get('status')
+        if not make or not model or not year or not location or not status:
+            return messages.missing_field_error("'make', 'model', 'year', 'location' or 'status'")
+        try:
+            year = int(year)
+        except ValueError:
+            return messages.int_error('year')
+        data = add_car(make, model, year, location, status)
+        return messages.check_results('Car', 'Car_id', data['car_id'], data, 'added')
 
 # Route for getting, updating and deleting specific car-data
 @app.route('/cars/<car_id>', methods = ['GET', 'PUT', 'DELETE'])
 def handle_cars(car_id):
+    #Checks the user input
     try:
         car_id = int(car_id)
     except ValueError:
         return messages.int_error('car_id')
     
+    # Finds a car by id
     if request.method == 'GET':
         results = get_car(car_id)
-        if results:
-            return messages.success('car', 'car_id', car_id, results, 'found')
-        else:
-            return messages.no_results('cars', 'car_id', car_id)
-
+        return messages.check_results('car', 'car_id', car_id, results, 'found')
+        
+    # Updates the car
     if request.method == 'PUT':
         data = request.get_json()
         fields = {}
@@ -65,7 +61,16 @@ def handle_cars(car_id):
         if 'status' in data:
             fields['status'] = data['status']
         data = update_car(car_id, fields)
-        if data:
-            return messages.success('Car', 'ID', car_id, data, 'update')
+        return messages.check_results('car', 'car_id', car_id, data, 'updated')
+        
+
+    # Deletes a car
     if request.method == 'DELETE':
-        return delete_car(car_id)
+        results = delete_car(car_id)
+        if results == {'Car_status': 'The car is unavailable'}:
+            return jsonify({
+                    "Message": f"Car with ID: {car_id} is unavailable",
+                    "Status": "Fail",
+                    })
+        return messages.check_results('car', 'car_id', car_id, results, 'deleted')
+        
