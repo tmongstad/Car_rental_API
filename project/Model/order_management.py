@@ -5,6 +5,14 @@ from project.model import messages
 from flask import request, jsonify
 
 
+def get_all_orders():
+    query = """
+    MATCH (customer:Customer)-[r:PLACED]->(order:Order)-[:FOR]->(car:Car)
+    RETURN customer, order, car
+    """
+    order_data = run_query(query)
+    return order_data
+
 def generate_order(customer_id, car_id): 
     query = """
         MATCH (customer:Customer {customer_id: $customer_id}), (car:Car {car_id: $car_id})
@@ -18,7 +26,7 @@ def cancel_order(car_id, customer_id):
     order_data = get_order_by_customer(customer_id)
     if order_data:
         change_booking_status(car_id, 'available')
-        return delete_order(order_data['order_id'])
+        return delete_order(order_data[0]['order']['order_id'])
     else:
         return []
 
