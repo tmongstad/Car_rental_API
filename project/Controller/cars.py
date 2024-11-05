@@ -9,7 +9,7 @@ def manage_cars():
     # Gets all cars
     if request.method == 'GET':
         data = get_all_cars()
-        return messages.check_results('All cars', 'none', 'none', data, 'found')
+        return messages.check_results('All cars', 'data', '', data, 'found')
     
     # Adds a car
     if request.method == 'POST':
