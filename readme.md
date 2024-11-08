@@ -169,4 +169,3 @@ List the software and tools required for running the project.
 
 ## Git clone:
     https://github.com/tmongstad/Car_rental_API.git
-
