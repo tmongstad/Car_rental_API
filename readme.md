@@ -158,8 +158,7 @@ POST: Adds a car
         requests car_id and changes status of car to available.
 
 ## Testing
-    Link to Postman via API
-    https://api.postman.com/collections/39335701-9e14a9f5-8f1c-4930-a41e-8b03e352ccc2?access_key=PMAT-01JBZ4K4D04Q5QF6FDSZAY1XW7
+    Link to Postman via API: pm for request
 
 
 ## Prerequisites
