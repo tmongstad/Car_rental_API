@@ -160,7 +160,6 @@ POST: Adds a car
 ## Testing
     Link to Postman via API: pm for request
 
-
 ## Prerequisites
 List the software and tools required for running the project.
 - **Python 3.x**
