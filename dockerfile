@@ -15,7 +15,7 @@ COPY . /app
 
 # Set environment variables
 # You can customize these as per your Flask app's needs
-ENV FLASK_APP=app.py
+ENV FLASK_APP=server.py
 ENV FLASK_ENV=production
 
 # Expose port 5000 to allow external access to the app
