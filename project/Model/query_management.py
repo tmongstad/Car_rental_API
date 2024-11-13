@@ -1,5 +1,5 @@
 from neo4j import GraphDatabase
-from 
+import os 
 
 # DATABASE URI and login-details
 NEO4J_URI='neo4j+s://077d22f6.databases.neo4j.io'
