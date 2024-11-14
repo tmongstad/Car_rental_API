@@ -160,6 +160,9 @@ POST: Adds a car
 ## Testing
     Link to Postman via API: pm for request
 
+## Docker commands for it to work:
+docker run -p 5001:5000 -e NEO4J_PASSWORD='your_password' car_rental_api
+
 ## Prerequisites
 List the software and tools required for running the project.
 - **Python 3.x**
