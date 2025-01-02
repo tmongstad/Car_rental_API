@@ -1,10 +1,8 @@
 # Car Rental API
 
 ## Overview
-This is the car rental API by Sami and Torstein, as a 
+This is the mandatory assignment for the system development (INFO212) programme at the university of Bergen, by Sami and Torstein.
 
-plaintext
-Kopier kode
 This is a car rental management system built with Flask, Neo4j, and Python. It manages cars, customers, orders, and employees, providing endpoints for creating, updating, and deleting resources.
 
 Table of Contents
