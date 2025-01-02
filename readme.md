@@ -5,13 +5,13 @@ This is the mandatory assignment for the system development (INFO212) programme 
 
 This is a car rental management system built with Flask, Neo4j, and Python. It manages cars, customers, orders, and employees, providing endpoints for creating, updating, and deleting resources.
 
-Table of Contents
-Getting Started
-Prerequisites
-Installation
-Configuration
-Running the Application
-Usage
+### Table of Contents:
+- Getting Started
+- Prerequisites
+- Installation
+- Configuration
+- Running the Application
+- Usage
 
 ## Endpoints
 
