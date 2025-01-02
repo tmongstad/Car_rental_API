@@ -6,24 +6,26 @@ This is the mandatory assignment for the system development (INFO212) programme 
 This is a car rental management system built with Flask, Neo4j, and Python. It manages cars, customers, orders, and employees, providing endpoints for creating, updating, and deleting resources.
 
 ### Table of Contents:
-- Getting Started
+- Endpoints
+-     Car endpoints
+-     Customer endpoints
+-     employee endpoints
+-     order endpoints
+- Testing
 - Prerequisites
-- Installation
-- Configuration
-- Running the Application
-- Usage
+- git clone
 
 ## Endpoints
 
 ### Car endpoints:
 
 #### Get all cars, add car
-@app.route('/cars', methods = ['GET', 'POST'])
-def manage_cars():
-GET: return all cars
-POST: Adds a car 
-    requests data in json-format: {"make":make, "model":model, "year":year, "location": location, "status":status}
-    return car_data in json-format {"car_id":car_id, "make":make, "model":model, "year":year, "location": location, "status":status}
+    @app.route('/cars', methods = ['GET', 'POST'])
+    def manage_cars():
+    GET: return all cars
+    POST: Adds a car 
+        requests data in json-format: {"make":make, "model":model, "year":year, "location": location, "status":status}
+        return car_data in json-format {"car_id":car_id, "make":make, "model":model, "year":year, "location": location, "status":status}
 
 #### getting, updating and deleting  by car_id
     @app.route('/cars/<car_id>', methods = ['GET', 'PUT', 'DELETE'])
